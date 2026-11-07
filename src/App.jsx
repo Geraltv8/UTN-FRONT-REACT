@@ -1,37 +1,37 @@
-import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Badge } from 'react-bootstrap';
+import './App.css';
 
+// Componentes y Páginas
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Proveedores from './pages/Proveedores';
 
-
+/**
+ * App.jsx: El cerebro del enrutamiento.
+ * Orquesta la navegación de la aplicación protegiendo las vistas administrativas
+ * con el componente envoltorio ProtectedRoute.
+ */
 function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* Ruta Pública: Inicio de Sesión */}
+                <Route path="/login" element={<Login />} />
 
-  const [productos, setProductos] = useState([]);
+                {/* Rutas Protegidas: Requieren Token JWT válido en localStorage */}
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/proveedores" element={<Proveedores />} />
+                </Route>
 
-  useEffect(() => {
-    fetch('http://localhost:3000/api/productos')
-      .then(response => response.json())
-      .then(data => setProductos(data))
-      .catch(error => console.error("error conectando al backend", error));
-  }, []);
-
-  return (
-    <Container>
-      <h1 className="text-primary">Catálogo (React)</h1>
-      <div className="row"></div>
-      {productos.map(producto => (
-        <div className="col-md-4 mb-3" key={producto._id}>
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">{producto.nombre}</h5>
-                <p className="card-text text-success fw-bold">${producto.precio}</p>
-                <Badge variant="secondary">{producto.categoria}</Badge>
-              </div>
-            </div>
-          </div>
-        ))}
-    </Container>
-  )
+                {/* Redirección por defecto ante rutas desconocidas */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
-export default App
+export default App;
