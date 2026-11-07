@@ -1,37 +1,46 @@
-import { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Badge } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import Login from './pages/Login.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import Proveedores from './pages/Proveedores.jsx';
+import Productos from './pages/Productos.jsx';
+import { cerrarSesion } from './services/authService.js';
 
-
-
-function App() {
-
-  const [productos, setProductos] = useState([]);
+export default function App() {
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/productos')
-      .then(response => response.json())
-      .then(data => setProductos(data))
-      .catch(error => console.error("error conectando al backend", error));
+    const expirar = () => setToken(null);
+    window.addEventListener('sesion-expirada', expirar);
+    return () => window.removeEventListener('sesion-expirada', expirar);
   }, []);
 
-  return (
-    <Container>
-      <h1 className="text-primary">Catálogo (React)</h1>
-      <div className="row"></div>
-      {productos.map(producto => (
-        <div className="col-md-4 mb-3" key={producto._id}>
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">{producto.nombre}</h5>
-                <p className="card-text text-success fw-bold">${producto.precio}</p>
-                <Badge variant="secondary">{producto.categoria}</Badge>
-              </div>
-            </div>
-          </div>
-        ))}
-    </Container>
-  )
-}
+  function iniciar(tokenNuevo) {
+    localStorage.setItem('token', tokenNuevo);
+    setToken(tokenNuevo);
+  }
 
-export default App
+  function salir() {
+    cerrarSesion();
+    setToken(null);
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login onLogin={iniciar} autenticado={Boolean(token)} />} />
+        <Route element={<ProtectedRoute autenticado={Boolean(token)} />}>
+          <Route element={<Layout onLogout={salir} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/productos" element={<Productos />} />
+            <Route path="/proveedores" element={<Proveedores />} />
+          </Route>
+        </Route>
+        <Route path="/" element={<Navigate to="/proveedores" replace />} />
+        <Route path="*" element={<Navigate to="/proveedores" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
