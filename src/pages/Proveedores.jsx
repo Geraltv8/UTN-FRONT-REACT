@@ -126,20 +126,20 @@ function Proveedores() {
     navigate('/login', { replace: true });
   };
 
-  const cargarProveedores = () => {
+  const cargarProveedores = async () => {
     setCargando(true);
     setError('');
-    obtenerProveedores()
-      .then((datos) => {
-        if (!Array.isArray(datos)) {
-          throw new Error('La respuesta del servidor no tiene el formato esperado.');
-        }
-        setProveedores(datos);
-      })
-      .catch((errorSolicitud) => {
-        setError(`No se pudieron cargar los proveedores: ${mensajeDeError(errorSolicitud)}`);
-      })
-      .finally(() => setCargando(false));
+    try {
+      const datos = await obtenerProveedores();
+      if (!Array.isArray(datos)) {
+        throw new Error('La respuesta del servidor no tiene el formato esperado.');
+      }
+      setProveedores(datos);
+    } catch (errorSolicitud) {
+      setError(`No se pudieron cargar los proveedores: ${mensajeDeError(errorSolicitud)}`);
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
