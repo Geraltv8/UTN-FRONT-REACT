@@ -1,37 +1,23 @@
-import { useState, useEffect } from 'react';
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Badge } from 'react-bootstrap';
+import Login from './pages/Login.jsx';
+import Proveedores from './pages/Proveedores.jsx';
 
-
-
-function App() {
-
-  const [productos, setProductos] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:3000/api/productos')
-      .then(response => response.json())
-      .then(data => setProductos(data))
-      .catch(error => console.error("error conectando al backend", error));
-  }, []);
-
-  return (
-    <Container>
-      <h1 className="text-primary">Catálogo (React)</h1>
-      <div className="row"></div>
-      {productos.map(producto => (
-        <div className="col-md-4 mb-3" key={producto._id}>
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">{producto.nombre}</h5>
-                <p className="card-text text-success fw-bold">${producto.precio}</p>
-                <Badge variant="secondary">{producto.categoria}</Badge>
-              </div>
-            </div>
-          </div>
-        ))}
-    </Container>
-  )
+function RutaProtegida() {
+  return localStorage.getItem('token') ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route element={<RutaProtegida />}>
+          <Route path="/" element={<Navigate to="/proveedores" replace />} />
+          <Route path="/proveedores" element={<Proveedores />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/proveedores" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
