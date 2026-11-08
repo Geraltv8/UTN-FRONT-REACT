@@ -1,37 +1,31 @@
-import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Badge } from 'react-bootstrap';
-
-
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import Catalogo from './pages/Catalogo';
+import Login from './pages/Login';
+import Proveedores from './pages/Proveedores';
 
 function App() {
-
-  const [productos, setProductos] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:3000/api/productos')
-      .then(response => response.json())
-      .then(data => setProductos(data))
-      .catch(error => console.error("error conectando al backend", error));
-  }, []);
-
   return (
-    <Container>
-      <h1 className="text-primary">Catálogo (React)</h1>
-      <div className="row"></div>
-      {productos.map(producto => (
-        <div className="col-md-4 mb-3" key={producto._id}>
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">{producto.nombre}</h5>
-                <p className="card-text text-success fw-bold">${producto.precio}</p>
-                <Badge variant="secondary">{producto.categoria}</Badge>
-              </div>
-            </div>
-          </div>
-        ))}
-    </Container>
-  )
+    <BrowserRouter>
+      <nav className="navbar navbar-dark bg-dark px-3 mb-3">
+        <span className="navbar-brand">Panel de Administración</span>
+        <div className="d-flex gap-2">
+          <Link to="/" className="btn btn-sm btn-outline-light">Catálogo</Link>
+          <Link to="/proveedores" className="btn btn-sm btn-outline-light">Proveedores</Link>
+          <Link to="/login" className="btn btn-sm btn-outline-warning">Login</Link>
+        </div>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Catalogo />} />
+        <Route path="/login" element={<Login />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/proveedores" element={<Proveedores />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
