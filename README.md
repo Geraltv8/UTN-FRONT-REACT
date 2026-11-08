@@ -1,19 +1,41 @@
-# React + Vite
+# Gestión de proveedores
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend en React para administrar proveedores del backend de Programación IV. La aplicación separa las llamadas HTTP, los componentes visuales y las páginas, y protege el directorio con autenticación JWT.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js y npm.
+- El backend [UTN-prog-iv-example](https://github.com/Geraltv8/UTN-prog-iv-example) ejecutándose en `http://localhost:3000`.
+- Una cuenta registrada en el backend. El registro de proveedores requiere el rol `ADMIN`.
 
-## React Compiler
+## Instalación y ejecución
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+```bash
+npm install
+npm run dev
+```
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+Abrí la URL que informa Vite (por defecto `http://localhost:5173`) e iniciá sesión con las credenciales del backend.
 
-## Expanding the ESLint configuration
+Para configurar otra URL de API, definí `VITE_API_URL` en un archivo `.env`:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```env
+VITE_API_URL=http://localhost:3000/api
+```
+
+## Arquitectura
+
+- `src/services/api.js`: instancia Axios e interceptor para enviar el JWT como `Bearer`.
+- `src/services/authService.js`: inicio de sesión.
+- `src/services/proveedorService.js`: consultas, registro y calificación de proveedores.
+- `src/components/`: tarjeta reutilizable y protección de rutas.
+- `src/pages/`: login y pantalla de gestión.
+
+La ruta `/proveedores` requiere el token emitido por `POST /api/login/login`. El backend disponible permite listar (`GET /api/proveedores`), registrar (`POST /api/proveedores`) y calificar (`PATCH /api/proveedores/:id/calificacion`). No expone endpoints para editar los demás datos ni eliminar proveedores.
+
+## Validación
+
+```bash
+npm run lint
+npm run build
+```
