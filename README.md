@@ -1,19 +1,39 @@
-# React + Vite
+# Gestión de proveedores
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación React para iniciar sesión y gestionar el directorio de proveedores de la API de UTN.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js y npm
+- Backend `UTN-prog-iv-example` ejecutándose en `http://localhost:3000`
+- Usuario habilitado en el backend
 
-## React Compiler
+## Desarrollo local
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+```sh
+npm install
+npm run dev
+```
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+La aplicación queda disponible en `http://localhost:5173`. Si la API corre en otra URL, crear un archivo `.env.local`:
 
-## Expanding the ESLint configuration
+```env
+VITE_API_URL=http://localhost:3000/api
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+El backend permite el origen `http://localhost:5173` por CORS.
+
+## Funcionalidad
+
+- Inicio de sesión mediante `POST /api/login/login`.
+- La ruta `/proveedores` requiere el token JWT; las solicitudes autenticadas envían `Authorization: Bearer <token>`.
+- Alta de proveedores con `POST /api/proveedores` y listado con `GET /api/proveedores`.
+- Calificación con `PATCH /api/proveedores/:id/calificacion`.
+- La API de referencia no implementa edición general ni eliminación de proveedores. El alta requiere rol `ADMIN`; el rol y los permisos se verifican en el backend.
+
+## Verificación
+
+```sh
+npm run lint
+npm run build
+```
