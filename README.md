@@ -1,19 +1,111 @@
-# React + Vite
+# UTN Front React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Panel de gestión de proveedores desarrollado con React, siguiendo una
+arquitectura por capas:
 
-Currently, two official plugins are available:
+- `src/services`: comunicación con el backend.
+- `src/components`: componentes visuales reutilizables.
+- `src/pages`: vistas y lógica de la aplicación.
+- `src/App.jsx`: configuración de las rutas.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Requisitos
 
-## React Compiler
+- Node.js.
+- El backend `UTN-prog-iv-example`.
+- MongoDB Atlas o una instancia local de MongoDB.
+- Un usuario con rol `ADMIN` para crear proveedores.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Instalación
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+Desde esta carpeta:
 
-## Expanding the ESLint configuration
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Configuración y ejecución del backend
+
+El backend necesita un archivo `.env` en su carpeta raíz con sus variables de
+entorno, incluyendo:
+
+```env
+MONGO_URI=tu cadena de conexión
+JWT_SECRET=tu clave secreta
+JWT_EXPIRATION=1h
+PORT=3000
+```
+
+No se deben subir el archivo `.env` ni las credenciales de Firebase al
+repositorio.
+
+En una terminal, ejecutar el backend:
+
+```bash
+cd ../UTN-prog-iv-example
+npm install
+npm run dev
+```
+
+El backend debe estar disponible en `http://localhost:3000`.
+
+Si el backend intenta cargar `firebase-key.json` y ese archivo no está
+disponible, se debe desactivar temporalmente la inicialización de Firebase en
+`server.js`, ya que no es necesaria para este TP de proveedores.
+
+## Ejecución del frontend
+
+En otra terminal, ejecutar:
+
+```bash
+npm run dev
+```
+
+La aplicación estará disponible en `http://localhost:5173`.
+
+## Autenticación
+
+Las rutas de proveedores están protegidas y requieren un token JWT.
+
+1. Iniciar sesión contra:
+
+   ```text
+   POST http://localhost:3000/api/login/login
+   ```
+
+2. Enviar un cuerpo JSON con email y contraseña:
+
+   ```json
+   {
+     "email": "tu_email",
+     "password": "tu_password"
+   }
+   ```
+
+3. Copiar el valor `token` de la respuesta.
+4. Abrir la consola del navegador en `http://localhost:5173` y ejecutar:
+
+   ```js
+   localStorage.setItem('token', 'TU_TOKEN')
+   ```
+
+El usuario debe tener rol `ADMIN` para registrar proveedores.
+
+## Gestión de proveedores
+
+Ingresar a:
+
+```text
+http://localhost:5173/proveedores
+```
+
+La vista permite:
+
+- Consultar proveedores existentes.
+- Registrar un proveedor.
+- Actualizar la calificación entre 1 y 5.
+
+Los servicios utilizados son:
+
+- `GET /api/proveedores`
+- `POST /api/proveedores`
+- `PATCH /api/proveedores/:id/calificacion`

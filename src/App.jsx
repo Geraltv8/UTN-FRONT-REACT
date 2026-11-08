@@ -1,10 +1,22 @@
 import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Badge } from 'react-bootstrap';
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes
+} from 'react-router-dom';
+import Proveedores from './pages/Proveedores';
 
+const RutaProtegida = ({ children }) => {
+  const token = localStorage.getItem('token');
 
+  return token ? children || <Outlet /> : <Navigate to="/" />;
+};
 
-function App() {
+const Catalogo = () => {
 
   const [productos, setProductos] = useState([]);
 
@@ -32,6 +44,19 @@ function App() {
         ))}
     </Container>
   )
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Catalogo />} />
+        <Route element={<RutaProtegida />}>
+          <Route path="/proveedores" element={<Proveedores />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App
