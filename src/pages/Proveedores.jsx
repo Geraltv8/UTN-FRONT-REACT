@@ -5,6 +5,7 @@ import {
   calificarProveedor,
 } from '../services/proveedorService';
 import ProveedorCard from '../components/ProveedorCard';
+import ProveedorForm from '../components/ProveedorForm';
 
 const FORM_INICIAL = {
   razonSocial: '',
@@ -96,23 +97,11 @@ const Proveedores = () => {
 
       <div className="row">
         <div className="col-md-4 mb-4">
-          <form onSubmit={handleSubmit} className="card p-3 shadow-sm">
-            <h5>Nuevo Proveedor</h5>
-            <input name="razonSocial" className="form-control mb-2" placeholder="Razón social"
-              value={formData.razonSocial} onChange={handleChange} required />
-            <input name="cuit" className="form-control mb-2" placeholder="CUIT (11 números, sin guiones)"
-              value={formData.cuit} onChange={handleChange} required
-              pattern="\d{11}" title="Deben ser exactamente 11 números" />
-            <input name="email" type="email" className="form-control mb-2" placeholder="Email de contacto"
-              value={formData.email} onChange={handleChange} required />
-            <input name="telefono" className="form-control mb-2" placeholder="Teléfono"
-              value={formData.telefono} onChange={handleChange} />
-            <input name="calle" className="form-control mb-2" placeholder="Calle"
-              value={formData.calle} onChange={handleChange} />
-            <input name="ciudad" className="form-control mb-3" placeholder="Ciudad"
-              value={formData.ciudad} onChange={handleChange} />
-            <button type="submit" className="btn btn-success w-100">Guardar</button>
-          </form>
+          <ProveedorForm
+            formData={formData}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+          />
         </div>
 
         <div className="col-md-8">
